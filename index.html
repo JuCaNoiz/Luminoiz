@@ -20,6 +20,8 @@
             background-color: #000;
             font-family: 'Space Mono', monospace;
             color: white;
+            /* Evita que Safari en iOS haga cosas raras con el touch */
+            touch-action: none; 
         }
 
         #canvas-container {
@@ -110,10 +112,10 @@
         .middle-section {
             display: flex;
             justify-content: space-between;
-            align-items: flex-end; /* BIOGRAFÍAS HACIA ABAJO */
+            align-items: flex-end; 
             width: 100%;
             flex-grow: 1;
-            margin-bottom: 0rem; /* Espacio antes del footer */
+            margin-bottom: 0rem; 
         }
 
         .bio-left, .bio-right {
@@ -439,8 +441,16 @@
             scene.background = new THREE.Color(0x000000);
             scene.fog = new THREE.FogExp2(0x000000, 0.015); 
 
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.z = 80; 
+            // Cálculo Responsivo Inicial
+            const aspect = window.innerWidth / window.innerHeight;
+            camera = new THREE.PerspectiveCamera(75, aspect, 0.1, 1000);
+            
+            // Si es un celular (Vertical), echamos la cámara mucho más atrás
+            if (aspect < 1.0) {
+                camera.position.z = 80 * (1.3 / aspect); 
+            } else {
+                camera.position.z = 80;
+            }
 
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
             renderer.setSize(window.innerWidth, window.innerHeight);
@@ -493,15 +503,14 @@
                     { char: 'Z', type: 1, baseScale: 2.0, invert: 1.0, spike: 2.0 } 
                 ];
 
-                // LETRAS MÁS SEPARADAS PARA EVITAR EMPALMES AL CRECER
                 const letterOffsetsX = [-63, -45, -27, -9, 9, 27, 45, 63];
 
                 baseConfigs.forEach((cfg, idx) => {
                     const geometry = new THREE.TextGeometry(cfg.char, {
                         font: font,
-                        size: 6,  
-                        height: 1, 
-                        curveSegments: 6, 
+                        size: 10,  
+                        height: 1.2, 
+                        curveSegments: 16, 
                         bevelEnabled: true,
                         bevelThickness: 0.15, 
                         bevelSize: 0.04,
@@ -527,7 +536,6 @@
 
                     let mesh = new THREE.Mesh(geometry, material);
 
-                    // LÓGICA VERTICAL: X y Z se mantienen fijos, Y varía.
                     let startX = letterOffsetsX[idx];
                     let startY = (Math.random() - 0.5) * 80; 
                     let startZ = 0; 
@@ -539,13 +547,13 @@
 
                     mesh.userData = {
                         roamPos: new THREE.Vector3(startX, startY, startZ),
-                        roamRotX: (Math.random() - 0.5) * 0.5, // Giro sutil
+                        roamRotX: (Math.random() - 0.5) * 0.5, 
                         roamRotY: (Math.random() - 0.5) * 0.5,
                         rx: (Math.random() - 0.5) * 0.02,
                         ry: (Math.random() - 0.5) * 0.02,
-                        vx: 0, // Cero movimiento horizontal
-                        vy: (Math.random() - 0.5) * 0.25, // Movimiento sutil arriba/abajo
-                        vz: 0, // Cero movimiento de profundidad
+                        vx: 0, 
+                        vy: (Math.random() - 0.5) * 0.25, 
+                        vz: 0, 
                         targetPos: new THREE.Vector3(letterOffsetsX[idx], targetY, targetZ),
                         uniformsRef: matUniforms
                     };
@@ -555,7 +563,7 @@
                 });
             });
 
-            // Enjambre Global de Partículas - AHORA VERDE NEÓN
+            // Enjambre Global de Partículas - Verde Neón
             const auraGeometry = new THREE.BufferGeometry();
             const particleCount = 12000;
             const posArray = new Float32Array(particleCount * 3);
@@ -574,7 +582,7 @@
 
             const auraMaterial = new THREE.PointsMaterial({
                 size: 0.25, 
-                color: 0x00ffaa, // VERDE/ACUA NEÓN
+                color: 0x00ffaa, 
                 transparent: true,
                 opacity: 0.95, 
                 blending: THREE.AdditiveBlending
@@ -586,10 +594,19 @@
             window.addEventListener('resize', onWindowResize);
         }
 
+        // --- Resize Responsivo para iPhone / Móviles ---
         function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
+            const aspect = window.innerWidth / window.innerHeight;
+            camera.aspect = aspect;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
+
+            // Ajustar el Zoom en móviles para que toda la palabra "LUMINOIZ" quepa
+            if (aspect < 1.0) {
+                camera.position.z = 80 * (1.3 / aspect); 
+            } else {
+                camera.position.z = 80;
+            }
         }
 
         // --- Audio Setup ---
@@ -670,7 +687,7 @@
                     scene.background.setHex(0x000000); 
                     scene.fog.color.setHex(0x000000);
                     isStrobing = 0.0;
-                    particleSystem.material.color.setHex(0x00ffaa); // Vuelve a Verde/Acua
+                    particleSystem.material.color.setHex(0x00ffaa); 
                 }
 
                 if (totalEnergy > 4.5) {
@@ -700,9 +717,8 @@
                     ud.roamRotX += ud.rx * audioSpeed;
                     ud.roamRotY += ud.ry * audioSpeed;
 
-                    ud.roamPos.y += ud.vy * audioSpeed; // SOLO SE MUEVE EN Y
+                    ud.roamPos.y += ud.vy * audioSpeed; 
 
-                    // Límite vertical estilo bucle antigravedad
                     if (ud.roamPos.y > 80) ud.roamPos.y = -80;
                     if (ud.roamPos.y < -80) ud.roamPos.y = 80;
 
@@ -747,7 +763,7 @@
                     
                     ud.roamRotX += ud.rx * idleSpeed;
                     ud.roamRotY += ud.ry * idleSpeed;
-                    ud.roamPos.y += ud.vy * idleSpeed; // SOLO Y
+                    ud.roamPos.y += ud.vy * idleSpeed; 
 
                     if (ud.roamPos.y > 80) ud.roamPos.y = -80;
                     if (ud.roamPos.y < -80) ud.roamPos.y = 80;
@@ -765,6 +781,7 @@
 
         document.getElementById('start-overlay').addEventListener('click', initAudio);
 
+        // Control manual de UI para Fullscreen 
         document.getElementById('btn-fullscreen').addEventListener('click', () => {
             const docEl = document.documentElement;
             const requestFS = docEl.requestFullscreen || docEl.webkitRequestFullscreen || docEl.mozRequestFullScreen || docEl.msRequestFullscreen;
@@ -781,12 +798,16 @@
             }
         });
 
-        document.getElementById('canvas-container').addEventListener('click', () => {
+        // HACK TÁCTIL PARA EL IPHONE: Pointerdown responde más rápido en Safari.
+        // Si la pantalla está oculta y tocas, pum, de regreso.
+        document.getElementById('canvas-container').addEventListener('pointerdown', () => {
             if (document.body.classList.contains('fullscreen-active')) {
-                document.body.classList.remove('fullscreen-active');
-                const exitFS = document.exitFullscreen || document.webkitExitFullscreen;
+                document.body.classList.remove('fullscreen-active'); // Reaparece la UI instantáneo
+                
+                // Intenta salir de pantalla completa si es que entró
+                const exitFS = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen;
                 if(exitFS && (document.fullscreenElement || document.webkitFullscreenElement)) {
-                    exitFS.call(document);
+                    exitFS.call(document).catch(e => console.log(e));
                 }
             }
         });
