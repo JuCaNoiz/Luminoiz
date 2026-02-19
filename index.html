@@ -393,13 +393,13 @@
                 
                 const baseConfigs = [
                     { char: 'L', type: 1, baseScale: 2.0, invert: 1.0, spike: 0.0 },
-                    { char: 'U', type: 2, baseScale: 1.0, invert: 1.0, spike: 2.0 },
+                    { char: 'U', type: 0, baseScale: 1.5, invert: 1.0, spike: 1.0 }, // <- Cambiado a sólido para que se distinga chingón
                     { char: 'M', type: 0, baseScale: 3.0, invert: 1.0, spike: 0.0 },
                     { char: 'I', type: 0, baseScale: 0.0, invert: 1.0, spike: 8.0 },
                     { char: 'N', type: 1, baseScale: 2.0, invert: -1.0, spike: 1.0 },
-                    { char: 'O', type: 2, baseScale: 2.0, invert: -1.0, spike: 0.0 },
+                    { char: 'O', type: 1, baseScale: 2.0, invert: -1.0, spike: 0.0 }, // <- Cambiado a wireframe
                     { char: 'I', type: 0, baseScale: 1.5, invert: 1.0, spike: 4.0 },
-                    { char: 'Z', type: 2, baseScale: -1.0, invert: -1.0, spike: 6.0 }
+                    { char: 'Z', type: 2, baseScale: -1.0, invert: -1.0, spike: 6.0 }  // Z se queda como partículas caóticas
                 ];
 
                 // Crear 3 sets completos de la palabra (24 letras)
@@ -502,17 +502,28 @@
         }
 
         // --- Audio Setup ---
+        let audioStarted = false; // Bandera para evitar doble ejecución
+
         async function initAudio() {
-            document.getElementById('start-overlay').style.opacity = '0';
+            if (audioStarted) return;
+            audioStarted = true;
+
+            // 1. Quitar el overlay AL INSTANTE, independientemente de los permisos
+            const overlay = document.getElementById('start-overlay');
+            overlay.style.opacity = '0';
             setTimeout(() => {
-                document.getElementById('start-overlay').style.display = 'none';
+                overlay.style.display = 'none';
                 document.getElementById('ui-layer').style.display = 'block';
             }, 500);
-
-            if (audioContext && audioContext.state === 'running') return;
             
             try {
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // Forzar el "resume" por políticas estrictas de navegadores
+                if (audioContext.state === 'suspended') {
+                    await audioContext.resume();
+                }
+
                 analyser = audioContext.createAnalyser();
                 analyser.fftSize = 512;
                 analyser.smoothingTimeConstant = 0.4; 
@@ -523,8 +534,8 @@
                 microphone.connect(analyser);
                 
             } catch (err) {
-                console.error("No se pudo iniciar el audio wey:", err);
-                alert("Carnal, necesitamos acceso al micrófono para que las geometrías reaccionen. Refresca y dale permisos.");
+                console.warn("Micrófono bloqueado o no detectado:", err);
+                alert("Carnal, el navegador bloqueó el micrófono o no tienes uno conectado. El visual correrá en modo automático. Checa los permisos en la barra de direcciones.");
             }
         }
 
@@ -635,3 +646,34 @@
                 });
                 particleSystem.rotation.y -= 0.001;
             }
+
+            renderer.render(scene, camera);
+        }
+
+        // --- Event Listeners ---
+        document.getElementById('start-overlay').addEventListener('click', initAudio);
+
+        document.getElementById('btn-fullscreen').addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log(`Error al activar fullscreen: ${err.message}`);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        });
+
+        document.addEventListener('fullscreenchange', () => {
+            if (document.fullscreenElement) {
+                document.body.classList.add('fullscreen-active');
+            } else {
+                document.body.classList.remove('fullscreen-active');
+            }
+        });
+
+        initThree();
+        animate();
+
+    </script>
+</body>
+</html>
