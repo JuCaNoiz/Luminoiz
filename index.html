@@ -29,6 +29,21 @@
             width: 100%;
             height: 100%;
             z-index: 0;
+            cursor: pointer; /* Para indicar que pueden hacer tap para salir */
+        }
+
+        /* Capa brutal para el estrobo */
+        #flash-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #fff;
+            z-index: 5;
+            opacity: 0;
+            pointer-events: none;
+            /* Sin transition para que el flash sea instantáneo y violento */
         }
 
         #start-overlay {
@@ -76,7 +91,8 @@
         }
 
         .fullscreen-active #ui-layer {
-            opacity: 0;
+            opacity: 0 !important;
+            pointer-events: none !important;
         }
 
         .header {
@@ -220,6 +236,8 @@
         <h2>Haz clic para iniciar sistema</h2>
     </div>
 
+    <div id="flash-overlay"></div>
+
     <div id="canvas-container"></div>
 
     <div id="ui-layer">
@@ -264,6 +282,7 @@
         let sineLines = []; // Para las líneas sinusoidales
         let audioContext, analyser, microphone, dataArray;
         let isStrobing = false;
+        let flashOverlay = document.getElementById('flash-overlay');
         
         // Factor global de formación de la palabra (0 = caótico, 1 = formado)
         let formationFactor = 0.0; 
@@ -402,7 +421,7 @@
             void main() {
                 vX = position.x;
                 vec3 pos = position;
-                // Onda compleja que reacciona a la energía total (graves + medios + agudos)
+                // Onda compleja que reacciona a la energía total
                 pos.y += sin(pos.x * 0.15 + uTime * 3.0) * (uEnergy * 3.0) + 
                          cos(pos.x * 0.3 - uTime * 2.0) * (uEnergy * 1.5);
                 gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
@@ -412,7 +431,7 @@
         const lineFragmentShader = `
             varying float vX;
             void main() {
-                // Normalizar la X para el gradiente (suponiendo ancho de -60 a 60)
+                // Normalizar la X para el gradiente
                 float t = (vX + 60.0) / 120.0;
                 vec3 yellow = vec3(1.0, 1.0, 0.0);
                 vec3 aqua = vec3(0.0, 1.0, 1.0);
@@ -448,7 +467,6 @@
             }
             lineGeo.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
 
-            // Hacemos 3 líneas con diferentes offsets en Z para dar volumen
             for(let i=0; i<3; i++) {
                 const lineMat = new THREE.ShaderMaterial({
                     uniforms: {
@@ -463,8 +481,8 @@
                 });
                 
                 const line = new THREE.Line(lineGeo, lineMat);
-                line.position.z = (i - 1) * 3; // Offset en Z
-                line.position.y = (i - 1) * 2; // Offset en Y
+                line.position.z = (i - 1) * 3; 
+                line.position.y = (i - 1) * 2; 
                 scene.add(line);
                 sineLines.push(line);
             }
@@ -484,20 +502,18 @@
                     { char: 'Z', type: 0, baseScale: 1.5, invert: 1.0, spike: 3.0 }
                 ];
 
-                // Las posiciones target para formar "L U M I N O I Z" centrada
                 const letterOffsetsX = [-21, -15, -9, -3, 3, 9, 15, 21];
-
-                let letterIndex = 0;
 
                 for(let set=0; set<3; set++) {
                     baseConfigs.forEach((cfg, idx) => {
+                        // Ajuste del grosor (height y bevel) para que no sean tan delgadas
                         const geometry = new THREE.TextGeometry(cfg.char, {
                             font: font,
                             size: 5,
-                            height: 0.2, 
+                            height: 0.6, // <- Intermedio, antes era 0.2
                             curveSegments: 12,
                             bevelEnabled: true,
-                            bevelThickness: 0.05, 
+                            bevelThickness: 0.08, // <- Un poco más de bisel
                             bevelSize: 0.02,
                             bevelOffset: 0,
                             bevelSegments: 3
@@ -526,19 +542,16 @@
                             mesh = new THREE.Mesh(geometry, material);
                         }
 
-                        // Posición de roaming aleatoria
                         let startX = (Math.random() - 0.5) * 100;
                         let startY = (Math.random() - 0.5) * 60;
                         let startZ = (Math.random() - 0.5) * 60 - 10;
                         
                         mesh.position.set(startX, startY, startZ);
                         
-                        // Posición objetivo (Target) para formar la palabra
-                        let targetY = set === 0 ? 0 : (set === 1 ? 15 : -15); // Set principal en medio, otros arriba/abajo
-                        let targetZ = set === 0 ? 0 : -15; // Set principal enfrente
+                        let targetY = set === 0 ? 0 : (set === 1 ? 15 : -15);
+                        let targetZ = set === 0 ? 0 : -15; 
 
                         mesh.userData = {
-                            // Parámetros de roaming (flotación)
                             roamPos: new THREE.Vector3(startX, startY, startZ),
                             roamRotX: Math.random() * Math.PI,
                             roamRotY: Math.random() * Math.PI,
@@ -547,16 +560,12 @@
                             vx: (Math.random() - 0.5) * 0.15,
                             vy: (Math.random() - 0.5) * 0.15,
                             vz: (Math.random() - 0.5) * 0.15,
-                            
-                            // Posición fija de lectura
                             targetPos: new THREE.Vector3(letterOffsetsX[idx], targetY, targetZ),
-                            
                             uniformsRef: matUniforms
                         };
 
                         scene.add(mesh);
                         visualElements.push(mesh);
-                        letterIndex++;
                     });
                 }
             });
@@ -662,16 +671,18 @@
                 const finalMid = mid * 2.0;
                 const finalTreble = treble * 4.0; 
                 
-                // Energía total para detonar eventos grandes
                 const totalEnergy = finalBass + finalMid + finalTreble;
 
-                // --- ESTROBO BACKGROUND ---
-                if (finalTreble > 0.45) {
+                // --- ESTROBO BACKGROUND (Más sensible y apoyado por capa HTML) ---
+                // Bajé a 0.35 para que se note mucho más con los platillos y percusiones
+                if (finalTreble > 0.35) {
+                    flashOverlay.style.opacity = '1'; // Flash HTML puro
                     scene.background.setHex(0xffffff); 
                     scene.fog.color.setHex(0xffffff);
                     isStrobing = 1.0;
                     particleSystem.material.color.setHex(0x220033); 
                 } else {
+                    flashOverlay.style.opacity = '0'; // Apaga Flash HTML
                     scene.background.setHex(0x000000); 
                     scene.fog.color.setHex(0x000000);
                     isStrobing = 0.0;
@@ -679,21 +690,18 @@
                 }
 
                 // --- LÓGICA DE FORMACIÓN DE PALABRA (High SPL) ---
-                // Si la energía supera un pico muy cabrón (drop de la canción)
                 if (totalEnergy > 4.5) {
-                    formationFactor = 1.0; // Se alinean instantáneamente
+                    formationFactor = 1.0; 
                 } else {
-                    // Decae suavemente, regresando al desmadre de flotación
                     formationFactor = Math.max(0.0, formationFactor - 0.02);
                 }
 
                 // --- Actualizar Líneas Sinusoidales ---
                 sineLines.forEach(line => {
                     line.material.uniforms.uTime.value = time;
-                    line.material.uniforms.uEnergy.value = totalEnergy * 0.5; // La amplitud depende de la energía
+                    line.material.uniforms.uEnergy.value = totalEnergy * 0.5; 
                 });
 
-                // Multiplicador de velocidad base: Si no hay audio, casi no se mueven (0.05). Con audio aceleran.
                 const audioSpeed = 0.05 + (totalEnergy * 0.3);
 
                 // --- Actualizar Objetos (Letras) ---
@@ -706,7 +714,6 @@
                     ud.uniformsRef.uTreble.value = finalTreble;
                     ud.uniformsRef.uStrobe.value = isStrobing;
 
-                    // Actualizar posición y rotación de Roaming (Flotación natural)
                     ud.roamRotX += ud.rx * audioSpeed;
                     ud.roamRotY += ud.ry * audioSpeed;
 
@@ -714,7 +721,6 @@
                     ud.roamPos.y += ud.vy * audioSpeed;
                     ud.roamPos.z += ud.vz * audioSpeed;
 
-                    // Límites del roaming
                     if (ud.roamPos.x > 60) ud.roamPos.x = -60;
                     if (ud.roamPos.x < -60) ud.roamPos.x = 60;
                     if (ud.roamPos.y > 40) ud.roamPos.y = -40;
@@ -722,13 +728,11 @@
                     if (ud.roamPos.z > 30) ud.roamPos.z = -50;
                     if (ud.roamPos.z < -50) ud.roamPos.z = 30;
 
-                    // Interpolación (LERP) entre Roaming y Target basado en formationFactor
                     mesh.position.lerpVectors(ud.roamPos, ud.targetPos, formationFactor);
                     
-                    // Las rotaciones también se van a cero (lectura frontal) cuando formationFactor = 1
                     mesh.rotation.x = ud.roamRotX * (1.0 - formationFactor);
                     mesh.rotation.y = ud.roamRotY * (1.0 - formationFactor);
-                    mesh.rotation.z = 0; // Sin giro en Z para que no se volteen raro
+                    mesh.rotation.z = 0; 
                 });
 
                 // --- Actualizar Nube de Partículas Global ---
@@ -748,16 +752,15 @@
                 }
                 particleSystem.geometry.attributes.position.needsUpdate = true;
                 
-                // Giro de cámara general ajustado al audio
                 particleSystem.rotation.y -= 0.0005 * audioSpeed; 
 
             } else {
                 // Animación idle (Sin mic conectado)
-                const idleSpeed = 0.05; // Movimiento casi nulo
+                const idleSpeed = 0.05; 
                 
                 sineLines.forEach(line => {
                     line.material.uniforms.uTime.value = time;
-                    line.material.uniforms.uEnergy.value = 0.5; // Pequeña onda default
+                    line.material.uniforms.uEnergy.value = 0.5; 
                 });
 
                 visualElements.forEach(mesh => {
@@ -789,21 +792,33 @@
         // --- Event Listeners ---
         document.getElementById('start-overlay').addEventListener('click', initAudio);
 
+        // Control manual de UI para Fullscreen (Hack para iOS/iPhone)
         document.getElementById('btn-fullscreen').addEventListener('click', () => {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(err => {
-                    console.log(`Error al activar fullscreen: ${err.message}`);
-                });
+            const docEl = document.documentElement;
+            const requestFS = docEl.requestFullscreen || docEl.webkitRequestFullscreen || docEl.mozRequestFullScreen || docEl.msRequestFullscreen;
+            
+            if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                // Intentamos pedir full screen a nivel sistema
+                if(requestFS) {
+                    requestFS.call(docEl).catch(err => console.log("API de fullscreen bloqueada por el navegador"));
+                }
+                // Pase lo que pase, ocultamos la interfaz a huevo
+                document.body.classList.add('fullscreen-active');
             } else {
-                document.exitFullscreen();
+                const exitFS = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen;
+                if(exitFS) exitFS.call(document);
+                document.body.classList.remove('fullscreen-active');
             }
         });
 
-        document.addEventListener('fullscreenchange', () => {
-            if (document.fullscreenElement) {
-                document.body.classList.add('fullscreen-active');
-            } else {
+        // Evento salvavidas para el iPhone: Si tocas el canvas y la interfaz está oculta, la trae de regreso.
+        document.getElementById('canvas-container').addEventListener('click', () => {
+            if (document.body.classList.contains('fullscreen-active')) {
                 document.body.classList.remove('fullscreen-active');
+                const exitFS = document.exitFullscreen || document.webkitExitFullscreen;
+                if(exitFS && (document.fullscreenElement || document.webkitFullscreenElement)) {
+                    exitFS.call(document);
+                }
             }
         });
 
@@ -813,4 +828,3 @@
     </script>
 </body>
 </html>
-
