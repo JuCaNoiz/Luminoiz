@@ -204,20 +204,36 @@
         /* MEDIA QUERY PARA MÓVILES - AQUÍ ESTÁ LA MAGIA DEL ESPACIO */
         @media (max-width: 768px) {
             #ui-layer {
-                padding: 1.5rem 1rem; /* Un poco más de margen arriba y abajo */
-                overflow-y: auto; 
+                padding: 1.5rem 1rem; 
             }
             .middle-section {
                 flex-direction: column;
-                justify-content: space-between; /* Empuja a JuCa arriba y Maro abajo */
-                gap: 1.5rem;
-                margin: 2rem 0; /* Da espacio respecto al titulo y al footer */
+                justify-content: space-between; 
+                margin: 1rem 0; 
+                height: 100%;
+            }
+            .bio-left {
+                margin-bottom: auto; /* Fuerza a JuCa hacia arriba */
+            }
+            .bio-right {
+                margin-top: auto; /* Fuerza a Maro hacia abajo */
             }
             .bio-left, .bio-right {
                 text-align: center;
                 max-width: 100%;
                 width: 100%;
-                background: rgba(0,0,0,0.6); /* Fondo un poco más oscuro en móvil para mejor lectura */
+                background: rgba(0,0,0,0.6); 
+                padding: 0.8rem; 
+            }
+            .bio-title {
+                font-size: 1.1rem;
+                padding-bottom: 0.3rem;
+                margin-bottom: 0.3rem;
+            }
+            .bio-text {
+                font-size: 0.75rem; /* Texto ligeramente más compacto para hacer espacio */
+                line-height: 1.4;
+                margin-bottom: 0.5rem;
             }
             .bio-right .social-links, .bio-left .social-links {
                 justify-content: center;
