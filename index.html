@@ -31,7 +31,6 @@
             z-index: 0;
         }
 
-        /* Overlay Inicial para permisos de audio */
         #start-overlay {
             position: absolute;
             top: 0;
@@ -47,10 +46,12 @@
             transition: opacity 0.5s ease;
         }
         #start-overlay h2 {
-            font-size: 1.5rem;
+            font-size: clamp(1rem, 4vw, 1.5rem);
             letter-spacing: 0.1em;
             text-transform: uppercase;
+            text-align: center;
             animation: pulse 1.5s infinite alternate;
+            padding: 1rem;
         }
 
         @keyframes pulse {
@@ -58,7 +59,6 @@
             100% { opacity: 1; text-shadow: 0 0 10px white; }
         }
 
-        /* Minimal UI that hides on fullscreen */
         #ui-layer {
             position: absolute;
             top: 0;
@@ -69,49 +69,48 @@
             pointer-events: none;
             box-sizing: border-box;
             transition: opacity 0.3s ease;
-            display: none;
+            display: none; 
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 2rem;
         }
 
         .fullscreen-active #ui-layer {
             opacity: 0;
         }
 
-        /* Header Title */
         .header {
-            position: absolute;
-            top: 2rem;
             width: 100%;
             text-align: center;
         }
         .header h1 {
-            font-size: 4rem;
+            font-size: clamp(2.5rem, 8vw, 4rem);
             font-weight: 700;
             letter-spacing: 0.2em;
             text-transform: uppercase;
             margin: 0;
-            text-shadow: 2px 2px 0px #f0f, -2px -2px 0px #0ff; /* Neon Glitch effect */
+            text-shadow: 2px 2px 0px #f0f, -2px -2px 0px #0ff; 
             animation: glitch-text-neon 3s infinite linear alternate-reverse;
         }
 
-        /* Left Bio (JuCa) */
-        .bio-left {
-            position: absolute;
-            left: 2rem;
-            top: 50%;
-            transform: translateY(-50%);
-            max-width: 250px;
+        .middle-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            flex-grow: 1;
+        }
+
+        .bio-left, .bio-right {
+            max-width: 280px;
             pointer-events: auto;
+            background: rgba(0,0,0,0.4); 
+            padding: 1rem;
+            border-radius: 8px;
         }
         
-        /* Right Bio (Maro) */
         .bio-right {
-            position: absolute;
-            right: 2rem;
-            top: 50%;
-            transform: translateY(-50%);
-            max-width: 250px;
             text-align: right;
-            pointer-events: auto;
         }
 
         .bio-title {
@@ -132,7 +131,7 @@
 
         .social-links {
             display: flex;
-            gap: 1rem;
+            gap: 1.2rem;
         }
         .bio-right .social-links {
             justify-content: flex-end;
@@ -140,18 +139,15 @@
 
         .social-links a {
             color: white;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             transition: transform 0.2s, color 0.2s;
         }
         .social-links a:hover {
             transform: scale(1.2);
-            color: #888;
+            color: #b026ff;
         }
 
-        /* Footer & Fullscreen */
         .footer {
-            position: absolute;
-            bottom: 2rem;
             width: 100%;
             text-align: center;
             pointer-events: auto;
@@ -159,6 +155,9 @@
             flex-direction: column;
             align-items: center;
             gap: 1rem;
+        }
+        .footer .social-links {
+            justify-content: center;
         }
 
         .footer p {
@@ -185,7 +184,27 @@
             color: black;
         }
 
-        /* Neon CSS Glitch */
+        @media (max-width: 768px) {
+            #ui-layer {
+                padding: 1rem;
+                overflow-y: auto; 
+            }
+            .middle-section {
+                flex-direction: column;
+                justify-content: center;
+                gap: 1.5rem;
+                margin: 1.5rem 0;
+            }
+            .bio-left, .bio-right {
+                text-align: center;
+                max-width: 100%;
+                width: 100%;
+            }
+            .bio-right .social-links, .bio-left .social-links {
+                justify-content: center;
+            }
+        }
+
         @keyframes glitch-text-neon {
             0% { text-shadow: 2px 2px 0px #f0f, -2px -2px 0px #0ff; transform: translate(0,0); }
             10% { text-shadow: -2px 2px 0px #f0f, 2px -2px 0px #0ff; transform: translate(-2px, 1px); }
@@ -208,19 +227,19 @@
             <h1>LuWIN01z</h1>
         </div>
 
-        <!-- JUCA BIO -->
-        <div class="bio-left">
-            <div class="bio-title">JuCa Noiz</div>
-            <div class="bio-text">
-                Fundador de Aural Flux. Ingeniero y diseñador de experiencias. Especialista en la creación de paisajes sonoros y arquitectura visual reactiva.
+        <div class="middle-section">
+            <div class="bio-left">
+                <div class="bio-title">JuCa Noiz</div>
+                <div class="bio-text">
+                    Fundador de Aural Flux. Ingeniero y diseñador de experiencias. Especialista en la creación de paisajes sonoros y arquitectura visual reactiva.
+                </div>
             </div>
-        </div>
 
-        <!-- MARO BIO -->
-        <div class="bio-right">
-            <div class="bio-title">Maro Valdivia</div>
-            <div class="bio-text">
-                Fundador de Tech_Noch. Artista audiovisual multidisciplinario. Fusión de elementos tradicionales y contemporáneos mediante mapping y síntesis visual.
+            <div class="bio-right">
+                <div class="bio-title">Maro Valdivia</div>
+                <div class="bio-text">
+                    Fundador de Tech_Noch. Artista audiovisual multidisciplinario. Fusión de elementos tradicionales y contemporáneos mediante mapping y síntesis visual.
+                </div>
             </div>
         </div>
 
@@ -229,6 +248,8 @@
                 <a href="https://www.instagram.com/luminoiz" target="_blank"><i class="fab fa-instagram"></i></a>
                 <a href="https://www.tiktok.com/@luminoiz" target="_blank"><i class="fab fa-tiktok"></i></a>
                 <a href="https://www.facebook.com/luminoiz" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://www.youtube.com/@luminoiz" target="_blank"><i class="fab fa-youtube"></i></a>
+                <a href="https://soundcloud.com/luminoiz" target="_blank"><i class="fab fa-soundcloud"></i></a>
             </div>
             <button id="btn-fullscreen" class="btn-fs">[ pantalla completa ]</button>
             <p>diseñado por JuCa Noiz para Luminoz</p>
@@ -240,10 +261,13 @@
         let scene, camera, renderer;
         let visualElements = []; 
         let particleSystem;
+        let sineLines = []; // Para las líneas sinusoidales
         let audioContext, analyser, microphone, dataArray;
         let isStrobing = false;
         
-        // Shader Uniforms base
+        // Factor global de formación de la palabra (0 = caótico, 1 = formado)
+        let formationFactor = 0.0; 
+        
         const globalUniforms = {
             uTime: { value: 0.0 },
             uBass: { value: 0.0 },
@@ -252,7 +276,7 @@
             uStrobe: { value: 0.0 }
         };
 
-        // --- Shaders B&W ---
+        // --- Shaders para las Letras (De Blanco a Púrpura) ---
         const vertexShader = `
             uniform float uTime;
             uniform float uBass;
@@ -265,7 +289,6 @@
             varying vec3 vNormal;
             varying float vDisplacement;
 
-            // 3D Noise function
             vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
             vec4 mod289(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
             vec4 permute(vec4 x) { return mod289(((x*34.0)+1.0)*x); }
@@ -284,10 +307,7 @@
                 vec3 x2 = x0 - i2 + C.yyy;
                 vec3 x3 = x0 - D.yyy;
                 i = mod289(i); 
-                vec4 p = permute( permute( permute( 
-                            i.z + vec4(0.0, i1.z, i2.z, 1.0 ))
-                          + i.y + vec4(0.0, i1.y, i2.y, 1.0 )) 
-                          + i.x + vec4(0.0, i1.x, i2.x, 1.0 ));
+                vec4 p = permute( permute( permute( i.z + vec4(0.0, i1.z, i2.z, 1.0 )) + i.y + vec4(0.0, i1.y, i2.y, 1.0 )) + i.x + vec4(0.0, i1.x, i2.x, 1.0 ));
                 float n_ = 0.142857142857;
                 vec3  ns = n_ * D.wyz - D.xzx;
                 vec4 j = p - 49.0 * floor(p * ns.z * ns.z);
@@ -308,10 +328,7 @@
                 vec3 p2 = vec3(a1.xy,h.z);
                 vec3 p3 = vec3(a1.zw,h.w);
                 vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));
-                p0 *= norm.x;
-                p1 *= norm.y;
-                p2 *= norm.z;
-                p3 *= norm.w;
+                p0 *= norm.x; p1 *= norm.y; p2 *= norm.z; p3 *= norm.w;
                 vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);
                 m = m * m;
                 return 42.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1), dot(p2,x2), dot(p3,x3) ) );
@@ -322,15 +339,12 @@
                 vNormal = normal;
                 vec3 pos = position;
                 
-                // Reacción inversa y escala por letra
                 float scaleMod = 1.0 + (uBass * uBassScale * uInvertReaction);
-                scaleMod = max(0.1, scaleMod); // Prevenir invertir o encoger a cero
+                scaleMod = max(0.1, scaleMod); 
                 
-                // Ruido de alta frecuencia
                 float noiseFreq = 2.0 + (uTreble * 5.0);
                 float noiseVal = snoise(pos * noiseFreq + uTime);
                 
-                // Picos violentos con agudos
                 float displacement = (noiseVal > 0.0) ? (noiseVal * uTreble * uSpikeIntensity) : 0.0;
                 vDisplacement = displacement;
                 
@@ -353,21 +367,57 @@
             varying float vDisplacement;
 
             void main() {
-                float intensity = smoothstep(0.1, 0.8, vDisplacement + (uMid * 0.5));
-                vec3 color = vec3(intensity + 0.2); 
+                float intensity = smoothstep(0.0, 1.0, vDisplacement + (uMid * 0.8));
                 
-                if (vDisplacement > 0.5) {
-                    color = vec3(1.0);
+                // --- LÓGICA DE COLOR (Blanco -> Púrpura) ---
+                vec3 colorWhite = vec3(1.0, 1.0, 1.0); // Base estática
+                vec3 colorPurple = vec3(0.6, 0.0, 0.9); // Reactividad Media
+                vec3 colorCyan = vec3(0.0, 1.0, 0.9); // Picos altos
+                
+                // Inicia blanco, se tiñe púrpura conforme sube la intensidad del audio
+                vec3 color = mix(colorWhite, colorPurple, smoothstep(0.1, 0.6, intensity));
+                
+                // Si el pico es muy alto, remata con puntas cyan
+                if (intensity > 0.6) {
+                    color = mix(color, colorCyan, (intensity - 0.6) * 2.5);
                 }
 
                 float scanline = sin(vUv.y * 150.0 - uTime * 20.0) * 0.1;
                 color -= vec3(scanline);
                 
+                // Estrobo
                 if (uStrobe > 0.5) {
-                    color = vec3(1.0) - color; // Inversión cromática
+                    color = vec3(1.0) - color; 
                 }
                 
                 gl_FragColor = vec4(color, 1.0);
+            }
+        `;
+
+        // --- Shaders para la Línea Sinusoidal (Amarillo a Acua) ---
+        const lineVertexShader = `
+            uniform float uTime;
+            uniform float uEnergy;
+            varying float vX;
+            void main() {
+                vX = position.x;
+                vec3 pos = position;
+                // Onda compleja que reacciona a la energía total (graves + medios + agudos)
+                pos.y += sin(pos.x * 0.15 + uTime * 3.0) * (uEnergy * 3.0) + 
+                         cos(pos.x * 0.3 - uTime * 2.0) * (uEnergy * 1.5);
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+            }
+        `;
+
+        const lineFragmentShader = `
+            varying float vX;
+            void main() {
+                // Normalizar la X para el gradiente (suponiendo ancho de -60 a 60)
+                float t = (vX + 60.0) / 120.0;
+                vec3 yellow = vec3(1.0, 1.0, 0.0);
+                vec3 aqua = vec3(0.0, 1.0, 1.0);
+                // Gradiente Amarillo -> Acua
+                gl_FragColor = vec4(mix(yellow, aqua, t), 1.0);
             }
         `;
 
@@ -377,15 +427,47 @@
             
             scene = new THREE.Scene();
             scene.background = new THREE.Color(0x000000);
-            scene.fog = new THREE.FogExp2(0x000000, 0.02); // Niebla un poco menos densa para ver más lejos
+            scene.fog = new THREE.FogExp2(0x000000, 0.02); 
 
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.z = 40; // Cámara más atrás para apreciar el espacio
+            camera.position.z = 40; 
 
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             container.appendChild(renderer.domElement);
+
+            // --- Generar Ondas Sinusoidales ---
+            const lineGeo = new THREE.BufferGeometry();
+            const linePoints = 200;
+            const linePositions = new Float32Array(linePoints * 3);
+            for(let i=0; i<linePoints; i++) {
+                linePositions[i*3] = -60 + (i * (120 / linePoints)); // de X=-60 a X=60
+                linePositions[i*3+1] = 0;
+                linePositions[i*3+2] = 0;
+            }
+            lineGeo.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
+
+            // Hacemos 3 líneas con diferentes offsets en Z para dar volumen
+            for(let i=0; i<3; i++) {
+                const lineMat = new THREE.ShaderMaterial({
+                    uniforms: {
+                        uTime: { value: 0 },
+                        uEnergy: { value: 0 }
+                    },
+                    vertexShader: lineVertexShader,
+                    fragmentShader: lineFragmentShader,
+                    transparent: true,
+                    blending: THREE.AdditiveBlending,
+                    opacity: 0.8
+                });
+                
+                const line = new THREE.Line(lineGeo, lineMat);
+                line.position.z = (i - 1) * 3; // Offset en Z
+                line.position.y = (i - 1) * 2; // Offset en Y
+                scene.add(line);
+                sineLines.push(line);
+            }
 
             // --- Generador de MÚLTIPLES Letras ---
             const loader = new THREE.FontLoader();
@@ -393,87 +475,102 @@
                 
                 const baseConfigs = [
                     { char: 'L', type: 1, baseScale: 2.0, invert: 1.0, spike: 0.0 },
-                    { char: 'U', type: 0, baseScale: 1.5, invert: 1.0, spike: 1.0 }, // <- Cambiado a sólido para que se distinga chingón
+                    { char: 'U', type: 0, baseScale: 1.5, invert: 1.0, spike: 1.0 }, 
                     { char: 'M', type: 0, baseScale: 3.0, invert: 1.0, spike: 0.0 },
                     { char: 'I', type: 0, baseScale: 0.0, invert: 1.0, spike: 8.0 },
                     { char: 'N', type: 1, baseScale: 2.0, invert: -1.0, spike: 1.0 },
-                    { char: 'O', type: 1, baseScale: 2.0, invert: -1.0, spike: 0.0 }, // <- Cambiado a wireframe
+                    { char: 'O', type: 1, baseScale: 2.0, invert: -1.0, spike: 0.0 }, 
                     { char: 'I', type: 0, baseScale: 1.5, invert: 1.0, spike: 4.0 },
-                    { char: 'Z', type: 2, baseScale: -1.0, invert: -1.0, spike: 6.0 }  // Z se queda como partículas caóticas
+                    { char: 'Z', type: 0, baseScale: 1.5, invert: 1.0, spike: 3.0 }
                 ];
 
-                // Crear 3 sets completos de la palabra (24 letras)
-                const fullConfigs = [];
-                for(let i=0; i<3; i++) {
-                    fullConfigs.push(...baseConfigs);
+                // Las posiciones target para formar "L U M I N O I Z" centrada
+                const letterOffsetsX = [-21, -15, -9, -3, 3, 9, 15, 21];
+
+                let letterIndex = 0;
+
+                for(let set=0; set<3; set++) {
+                    baseConfigs.forEach((cfg, idx) => {
+                        const geometry = new THREE.TextGeometry(cfg.char, {
+                            font: font,
+                            size: 5,
+                            height: 0.2, 
+                            curveSegments: 12,
+                            bevelEnabled: true,
+                            bevelThickness: 0.05, 
+                            bevelSize: 0.02,
+                            bevelOffset: 0,
+                            bevelSegments: 3
+                        });
+                        
+                        geometry.center(); 
+
+                        const matUniforms = THREE.UniformsUtils.clone(globalUniforms);
+                        matUniforms.uInvertReaction = { value: cfg.invert };
+                        matUniforms.uBassScale = { value: cfg.baseScale };
+                        matUniforms.uSpikeIntensity = { value: cfg.spike };
+                        
+                        const material = new THREE.ShaderMaterial({
+                            uniforms: matUniforms,
+                            vertexShader: vertexShader,
+                            fragmentShader: fragmentShader,
+                            wireframe: cfg.type === 1,
+                            transparent: true,
+                            opacity: 0.95
+                        });
+
+                        let mesh;
+                        if(cfg.type === 2) {
+                            mesh = new THREE.Points(geometry, material);
+                        } else {
+                            mesh = new THREE.Mesh(geometry, material);
+                        }
+
+                        // Posición de roaming aleatoria
+                        let startX = (Math.random() - 0.5) * 100;
+                        let startY = (Math.random() - 0.5) * 60;
+                        let startZ = (Math.random() - 0.5) * 60 - 10;
+                        
+                        mesh.position.set(startX, startY, startZ);
+                        
+                        // Posición objetivo (Target) para formar la palabra
+                        let targetY = set === 0 ? 0 : (set === 1 ? 15 : -15); // Set principal en medio, otros arriba/abajo
+                        let targetZ = set === 0 ? 0 : -15; // Set principal enfrente
+
+                        mesh.userData = {
+                            // Parámetros de roaming (flotación)
+                            roamPos: new THREE.Vector3(startX, startY, startZ),
+                            roamRotX: Math.random() * Math.PI,
+                            roamRotY: Math.random() * Math.PI,
+                            rx: (Math.random() - 0.5) * 0.02,
+                            ry: (Math.random() - 0.5) * 0.02,
+                            vx: (Math.random() - 0.5) * 0.15,
+                            vy: (Math.random() - 0.5) * 0.15,
+                            vz: (Math.random() - 0.5) * 0.15,
+                            
+                            // Posición fija de lectura
+                            targetPos: new THREE.Vector3(letterOffsetsX[idx], targetY, targetZ),
+                            
+                            uniformsRef: matUniforms
+                        };
+
+                        scene.add(mesh);
+                        visualElements.push(mesh);
+                        letterIndex++;
+                    });
                 }
-
-                fullConfigs.forEach((cfg) => {
-                    const geometry = new THREE.TextGeometry(cfg.char, {
-                        font: font,
-                        size: 5,
-                        height: 1.5,
-                        curveSegments: 12,
-                        bevelEnabled: true,
-                        bevelThickness: 0.5,
-                        bevelSize: 0.1,
-                        bevelOffset: 0,
-                        bevelSegments: 4
-                    });
-                    
-                    geometry.center(); 
-
-                    const matUniforms = THREE.UniformsUtils.clone(globalUniforms);
-                    matUniforms.uInvertReaction = { value: cfg.invert };
-                    matUniforms.uBassScale = { value: cfg.baseScale };
-                    matUniforms.uSpikeIntensity = { value: cfg.spike };
-                    
-                    const material = new THREE.ShaderMaterial({
-                        uniforms: matUniforms,
-                        vertexShader: vertexShader,
-                        fragmentShader: fragmentShader,
-                        wireframe: cfg.type === 1,
-                        transparent: true,
-                        opacity: 0.9
-                    });
-
-                    let mesh;
-                    if(cfg.type === 2) {
-                        mesh = new THREE.Points(geometry, material);
-                    } else {
-                        mesh = new THREE.Mesh(geometry, material);
-                    }
-
-                    // Posición aleatoria mucho más amplia
-                    mesh.position.x = (Math.random() - 0.5) * 100;
-                    mesh.position.y = (Math.random() - 0.5) * 60;
-                    mesh.position.z = (Math.random() - 0.5) * 60 - 10;
-                    
-                    // Vectores de velocidad y rotación
-                    mesh.userData = {
-                        rx: (Math.random() - 0.5) * 0.02,
-                        ry: (Math.random() - 0.5) * 0.02,
-                        vx: (Math.random() - 0.5) * 0.15, // Movimiento en X
-                        vy: (Math.random() - 0.5) * 0.15, // Movimiento en Y
-                        vz: (Math.random() - 0.5) * 0.15, // Movimiento en Z
-                        uniformsRef: matUniforms
-                    };
-
-                    scene.add(mesh);
-                    visualElements.push(mesh);
-                });
             });
 
             // --- Enjambre Global de Partículas ---
             const auraGeometry = new THREE.BufferGeometry();
-            const particleCount = 15000;
+            const particleCount = 10000;
             const posArray = new Float32Array(particleCount * 3);
             const initialPosArray = new Float32Array(particleCount * 3);
 
             for(let i=0; i < particleCount * 3; i+=3) {
-                const x = (Math.random() - 0.5) * 100;
-                const y = (Math.random() - 0.5) * 100;
-                const z = (Math.random() - 0.5) * 100;
+                const x = (Math.random() - 0.5) * 120;
+                const y = (Math.random() - 0.5) * 120;
+                const z = (Math.random() - 0.5) * 120;
                 
                 posArray[i] = x; posArray[i+1] = y; posArray[i+2] = z;
                 initialPosArray[i] = x; initialPosArray[i+1] = y; initialPosArray[i+2] = z;
@@ -482,10 +579,10 @@
             auraGeometry.setAttribute('initialPosition', new THREE.BufferAttribute(initialPosArray, 3));
 
             const auraMaterial = new THREE.PointsMaterial({
-                size: 0.05,
-                color: 0xffffff,
+                size: 0.15, 
+                color: 0xddddff, 
                 transparent: true,
-                opacity: 0.5,
+                opacity: 0.8, 
                 blending: THREE.AdditiveBlending
             });
 
@@ -502,24 +599,22 @@
         }
 
         // --- Audio Setup ---
-        let audioStarted = false; // Bandera para evitar doble ejecución
+        let audioStarted = false;
 
         async function initAudio() {
             if (audioStarted) return;
             audioStarted = true;
 
-            // 1. Quitar el overlay AL INSTANTE, independientemente de los permisos
             const overlay = document.getElementById('start-overlay');
             overlay.style.opacity = '0';
             setTimeout(() => {
                 overlay.style.display = 'none';
-                document.getElementById('ui-layer').style.display = 'block';
+                document.getElementById('ui-layer').style.display = 'flex'; 
             }, 500);
             
             try {
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
                 
-                // Forzar el "resume" por políticas estrictas de navegadores
                 if (audioContext.state === 'suspended') {
                     await audioContext.resume();
                 }
@@ -535,7 +630,7 @@
                 
             } catch (err) {
                 console.warn("Micrófono bloqueado o no detectado:", err);
-                alert("Carnal, el navegador bloqueó el micrófono o no tienes uno conectado. El visual correrá en modo automático. Checa los permisos en la barra de direcciones.");
+                alert("Carnal, el navegador bloqueó el micrófono. El visual correrá en modo automático. Checa los permisos.");
             }
         }
 
@@ -561,52 +656,79 @@
 
                 bass = (bass / bassEnd) / 255;
                 mid = (mid / (midEnd - bassEnd)) / 255;
-                // Ajuste para el estrobo: hacemos el agudo más sensible multiplicándolo un poco más
                 treble = (treble / (dataArray.length - midEnd)) / 255;
 
-                const finalBass = Math.pow(bass, 1.5) * 2.0; 
+                const finalBass = Math.pow(bass, 1.2) * 2.5; 
                 const finalMid = mid * 2.0;
-                const finalTreble = treble * 3.5; // Amplificado para que agarre mejor los picos
+                const finalTreble = treble * 4.0; 
+                
+                // Energía total para detonar eventos grandes
+                const totalEnergy = finalBass + finalMid + finalTreble;
 
-                // --- ESTROBO BACKGROUND (Calibrado) ---
-                // Bajamos el umbral a 0.55 para que flashee más seguido con ritmos estándar
-                if (finalTreble > 0.55) {
-                    scene.background.setHex(0xffffff); // Fondo Blanco Nuclear
+                // --- ESTROBO BACKGROUND ---
+                if (finalTreble > 0.45) {
+                    scene.background.setHex(0xffffff); 
                     scene.fog.color.setHex(0xffffff);
                     isStrobing = 1.0;
-                    particleSystem.material.color.setHex(0x000000); // Partículas negras
+                    particleSystem.material.color.setHex(0x220033); 
                 } else {
-                    scene.background.setHex(0x000000); // Fondo Negro Absoluto
+                    scene.background.setHex(0x000000); 
                     scene.fog.color.setHex(0x000000);
                     isStrobing = 0.0;
-                    particleSystem.material.color.setHex(0xffffff); // Partículas blancas
+                    particleSystem.material.color.setHex(0xddddff); 
                 }
+
+                // --- LÓGICA DE FORMACIÓN DE PALABRA (High SPL) ---
+                // Si la energía supera un pico muy cabrón (drop de la canción)
+                if (totalEnergy > 4.5) {
+                    formationFactor = 1.0; // Se alinean instantáneamente
+                } else {
+                    // Decae suavemente, regresando al desmadre de flotación
+                    formationFactor = Math.max(0.0, formationFactor - 0.02);
+                }
+
+                // --- Actualizar Líneas Sinusoidales ---
+                sineLines.forEach(line => {
+                    line.material.uniforms.uTime.value = time;
+                    line.material.uniforms.uEnergy.value = totalEnergy * 0.5; // La amplitud depende de la energía
+                });
+
+                // Multiplicador de velocidad base: Si no hay audio, casi no se mueven (0.05). Con audio aceleran.
+                const audioSpeed = 0.05 + (totalEnergy * 0.3);
 
                 // --- Actualizar Objetos (Letras) ---
                 visualElements.forEach(mesh => {
-                    mesh.userData.uniformsRef.uTime.value = time;
-                    mesh.userData.uniformsRef.uBass.value = finalBass;
-                    mesh.userData.uniformsRef.uMid.value = finalMid;
-                    mesh.userData.uniformsRef.uTreble.value = finalTreble;
-                    mesh.userData.uniformsRef.uStrobe.value = isStrobing;
+                    const ud = mesh.userData;
+                    
+                    ud.uniformsRef.uTime.value = time;
+                    ud.uniformsRef.uBass.value = finalBass;
+                    ud.uniformsRef.uMid.value = finalMid;
+                    ud.uniformsRef.uTreble.value = finalTreble;
+                    ud.uniformsRef.uStrobe.value = isStrobing;
 
-                    // Rotación
-                    mesh.rotation.x += mesh.userData.rx + (finalMid * 0.01);
-                    mesh.rotation.y += mesh.userData.ry + (finalMid * 0.02);
+                    // Actualizar posición y rotación de Roaming (Flotación natural)
+                    ud.roamRotX += ud.rx * audioSpeed;
+                    ud.roamRotY += ud.ry * audioSpeed;
 
-                    // Movimiento en el espacio (se acelera con la música)
-                    const speedMultiplier = 1.0 + (finalMid * 2.0);
-                    mesh.position.x += mesh.userData.vx * speedMultiplier;
-                    mesh.position.y += mesh.userData.vy * speedMultiplier;
-                    mesh.position.z += mesh.userData.vz * speedMultiplier;
+                    ud.roamPos.x += ud.vx * audioSpeed;
+                    ud.roamPos.y += ud.vy * audioSpeed;
+                    ud.roamPos.z += ud.vz * audioSpeed;
 
-                    // Si se salen de la pantalla, las regresamos por el otro lado (efecto wrap)
-                    if (mesh.position.x > 60) mesh.position.x = -60;
-                    if (mesh.position.x < -60) mesh.position.x = 60;
-                    if (mesh.position.y > 40) mesh.position.y = -40;
-                    if (mesh.position.y < -40) mesh.position.y = 40;
-                    if (mesh.position.z > 30) mesh.position.z = -50;
-                    if (mesh.position.z < -50) mesh.position.z = 30;
+                    // Límites del roaming
+                    if (ud.roamPos.x > 60) ud.roamPos.x = -60;
+                    if (ud.roamPos.x < -60) ud.roamPos.x = 60;
+                    if (ud.roamPos.y > 40) ud.roamPos.y = -40;
+                    if (ud.roamPos.y < -40) ud.roamPos.y = 40;
+                    if (ud.roamPos.z > 30) ud.roamPos.z = -50;
+                    if (ud.roamPos.z < -50) ud.roamPos.z = 30;
+
+                    // Interpolación (LERP) entre Roaming y Target basado en formationFactor
+                    mesh.position.lerpVectors(ud.roamPos, ud.targetPos, formationFactor);
+                    
+                    // Las rotaciones también se van a cero (lectura frontal) cuando formationFactor = 1
+                    mesh.rotation.x = ud.roamRotX * (1.0 - formationFactor);
+                    mesh.rotation.y = ud.roamRotY * (1.0 - formationFactor);
+                    mesh.rotation.z = 0; // Sin giro en Z para que no se volteen raro
                 });
 
                 // --- Actualizar Nube de Partículas Global ---
@@ -617,34 +739,48 @@
                     const inv = (i % 2 === 0) ? 1 : -1; 
                     const expansion = 1.0 + (finalBass * 0.8 * inv);
                     
-                    const waveX = Math.sin(time * 0.5 + i) * finalMid * 3.0;
-                    const waveY = Math.cos(time * 0.5 + i) * finalMid * 3.0;
+                    const waveX = Math.sin(time * 0.2 + i) * finalMid * 3.0;
+                    const waveY = Math.cos(time * 0.2 + i) * finalMid * 3.0;
 
                     positions[i] = initials[i] * expansion + waveX;
                     positions[i+1] = initials[i+1] * expansion + waveY;
                     positions[i+2] = initials[i+2] * expansion;
                 }
                 particleSystem.geometry.attributes.position.needsUpdate = true;
-                particleSystem.rotation.y -= 0.001 + (finalBass * 0.02);
+                
+                // Giro de cámara general ajustado al audio
+                particleSystem.rotation.y -= 0.0005 * audioSpeed; 
 
             } else {
-                // Animación idle (cuando no hay música sonando)
-                visualElements.forEach(mesh => {
-                    mesh.userData.uniformsRef.uTime.value = time;
-                    mesh.rotation.x += mesh.userData.rx;
-                    mesh.rotation.y += mesh.userData.ry;
-                    mesh.position.x += mesh.userData.vx;
-                    mesh.position.y += mesh.userData.vy;
-                    mesh.position.z += mesh.userData.vz;
-
-                    if (mesh.position.x > 60) mesh.position.x = -60;
-                    if (mesh.position.x < -60) mesh.position.x = 60;
-                    if (mesh.position.y > 40) mesh.position.y = -40;
-                    if (mesh.position.y < -40) mesh.position.y = 40;
-                    if (mesh.position.z > 30) mesh.position.z = -50;
-                    if (mesh.position.z < -50) mesh.position.z = 30;
+                // Animación idle (Sin mic conectado)
+                const idleSpeed = 0.05; // Movimiento casi nulo
+                
+                sineLines.forEach(line => {
+                    line.material.uniforms.uTime.value = time;
+                    line.material.uniforms.uEnergy.value = 0.5; // Pequeña onda default
                 });
-                particleSystem.rotation.y -= 0.001;
+
+                visualElements.forEach(mesh => {
+                    const ud = mesh.userData;
+                    ud.uniformsRef.uTime.value = time;
+                    
+                    ud.roamRotX += ud.rx * idleSpeed;
+                    ud.roamRotY += ud.ry * idleSpeed;
+                    ud.roamPos.x += ud.vx * idleSpeed;
+                    ud.roamPos.y += ud.vy * idleSpeed;
+                    ud.roamPos.z += ud.vz * idleSpeed;
+
+                    if (ud.roamPos.x > 60) ud.roamPos.x = -60;
+                    if (ud.roamPos.x < -60) ud.roamPos.x = 60;
+                    if (ud.roamPos.y > 40) ud.roamPos.y = -40;
+                    if (ud.roamPos.y < -40) ud.roamPos.y = 40;
+                    if (ud.roamPos.z > 30) ud.roamPos.z = -50;
+                    if (ud.roamPos.z < -50) ud.roamPos.z = 30;
+
+                    mesh.position.copy(ud.roamPos);
+                    mesh.rotation.set(ud.roamRotX, ud.roamRotY, 0);
+                });
+                particleSystem.rotation.y -= 0.0005 * idleSpeed;
             }
 
             renderer.render(scene, camera);
@@ -677,3 +813,4 @@
     </script>
 </body>
 </html>
+
